@@ -6,7 +6,7 @@ MSSV: 2A202603787
 
 ## 1. Case được chọn
 
-- ID case: H6
+- ID case: H3
 - Câu trả lời của agent: 
 
 Mã sự cố \"totally-not-a-real-id\" không liên kết với bất kỳ sự cố nào được ghi nhận trong 50 sự cố gần nhất của Cloudflare. Không có thông tin nào về sự cố này làm sập dịch vụ Cloudflare trên toàn thế giới. 
@@ -77,7 +77,7 @@ Dán đoạn trace chứng minh lỗi và nêu nguyên nhân có thể xảy ra.
           }
         ],
 ```
-Mặc dù Agent đã trả lời đúng là không có incident trùng với ID đưa ra trong 50 incidents gần đây, cũng như không tự bịa link và chỉ rõ link chuẩn đến trang chính thức của Cloudflare. Tuy nhiên, agent lại gọi tool get_status thay vì gọi get_incident_details. Tool get_status chỉ xác nhận có ID sự cố trong 50 sự cố gần nhất hay không, chứ không xác nhận ID có tồn tại hay không. Agent cần trả lời dựa trên giới hạn của 50 incidents gần nhất, và phải confirm lại với user về timeline của incident để xác định chính xác bằng tool get_incident_details, tool này xác định rõ hơn thời gian xảy ra của incident.
+Mặc dù Agent đã trả lời đúng là không có incident trùng với ID đưa ra trong 50 incidents gần đây, cũng như không tự bịa link và chỉ rõ link chuẩn đến trang chính thức của Cloudflare. Tuy nhiên, agent lại gọi tool get_status thay vì gọi get_incident_details. Tool get_status chỉ lấy 5 sự cố gần nhất, chứ không xác nhận ID cụ thể. Tool get_incident_detail có thể tra cụ thể 1 ID, nhưng giới hạn của tool này là chỉ tra trong 50 incident gần nhất, nên tool sẽ không thể chắc chắn ID không tồn tại hay tool không tìm ra.
 
 
 ## 3. Thay đổi đã thực hiện
@@ -89,14 +89,16 @@ Mặc dù Agent đã trả lời đúng là không có incident trùng với ID 
 
 | Chỉ số                | `eval_before.json` | `eval_after.json` |
 |-----------------------|--------------------|-------------------|
-| Điểm tổng             | 90.91              |                   |
-| Điểm case đã chọn     | 50                 |                   |
-| Số model calls        | 1                  |                   |
-| Token, chi phí nếu có | 742                |                   |
+| Điểm tổng             | 90.91              | 90.82             |
+| Điểm case đã chọn     | 50                 | 100               |
+| Số model calls        | 1                  | 1                 |
+| Token, chi phí nếu có | 742                | 479               |
 
-- Lỗi đã giải quyết:
-- Lỗi còn lại hoặc mới xuất hiện:
+- Lỗi đã giải quyết: Trong case H3, Agent đã gọi đúng tool (get_incident_detail), không xác nhận ID incident không tồn tại, và có yêu cầu user check lại ID hoặc đưa ra mốc thời gian cụ thể.
+- Lỗi còn lại hoặc mới xuất hiện: Trong case H2, user đã đưa ra một ID cụ thể, và Agent đã theo system prompt gọi luôn tool get_incident_details. Mặc dù tool đã xác nhận ID incident tồn tại, nhưng không như tool get_status, get_incident_details không kiểm tra được tình trạng incident và snapshot hiện tại.
 
 ## 5. Giới hạn
 
 Nêu giới hạn của điểm judge, của snapshot và của việc chỉ chạy một lần mỗi phiên bản.
+
+
