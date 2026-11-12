@@ -99,6 +99,8 @@ Mặc dù Agent đã trả lời đúng là không có incident trùng với ID 
 
 ## 5. Giới hạn
 
-Nêu giới hạn của điểm judge, của snapshot và của việc chỉ chạy một lần mỗi phiên bản.
+_Nêu giới hạn của điểm judge, của snapshot và của việc chỉ chạy một lần mỗi phiên bản._
 
+Điểm judge trong các bài test chỉ là ước lượng dựa trên khả năng đánh giá của LLM, cần phải đánh giá thêm cả câu trả lời so với kết quả mong muốn (expected) và trace của case test. Về snapshot, thời gian bị cố định vào thời điểm được ghi trong data hơn là thời gian thực nên không phản ánh được tình trạng thực sự hiện tại của server.
 
+Do mỗi phiên bản eval chỉ chạy 1 lần nên không thể kết luận được tính ổn định của Agent, cần chạy thêm nhiều lần và theo dõi các kết quả qua các lần test khác nhau.
